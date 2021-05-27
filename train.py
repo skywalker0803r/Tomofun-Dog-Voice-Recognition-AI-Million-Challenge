@@ -88,14 +88,16 @@ def train(model,optimizer,loss_fn,max_epochs=300,log_interval=10):
         plt.plot(history['train_loss'],label='train_loss')
         plt.plot(history['valid_loss'],label='valid_loss')
         plt.legend()
-        plt.show()
         plt.savefig('loss.png')
+        plt.show()
+        
         
         plt.plot(history['train_auc'],label='train_auc')
         plt.plot(history['valid_auc'],label='valid_auc')
         plt.legend()
-        plt.show()
         plt.savefig('auc.png')
+        plt.show()
+        
         
         return model
 
