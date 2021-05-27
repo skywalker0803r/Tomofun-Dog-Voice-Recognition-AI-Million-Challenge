@@ -6,7 +6,7 @@ from tqdm import tqdm
 from copy import deepcopy
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
-from ResNet import ResNet50
+from LeNet import LeNet
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -89,17 +89,20 @@ def train(model,optimizer,loss_fn,max_epochs=300,log_interval=10):
         plt.plot(history['valid_loss'],label='valid_loss')
         plt.legend()
         plt.show()
+        plt.savefig('loss.png')
+        
         plt.plot(history['train_auc'],label='train_auc')
         plt.plot(history['valid_auc'],label='valid_auc')
         plt.legend()
         plt.show()
+        plt.savefig('auc.png')
         
         return model
 
 
 if __name__ == '__main__':
-    model = ResNet50(num_classes=6, channels=1).to(device)
+    model = LeNet().to(device)
     optimizer = Adam(model.parameters(),lr=1e-3)
     loss_fn = nn.SmoothL1Loss()
-    model = train(model,optimizer,loss_fn,max_epochs=20,log_interval=10)
+    model = train(model,optimizer,loss_fn,max_epochs=100,log_interval=10)
     torch.save(model,'model.pt')
