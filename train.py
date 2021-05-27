@@ -1,5 +1,4 @@
 import torch
-from model import Model
 from torch.optim import Adam
 from torch import nn
 import numpy as np
@@ -7,6 +6,7 @@ from tqdm import tqdm
 from copy import deepcopy
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
+from ResNet import ResNet50
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -98,8 +98,8 @@ def train(model,optimizer,loss_fn,max_epochs=300,log_interval=10):
 
 
 if __name__ == '__main__':
-    model = Model().to(device)
+    model = ResNet50(num_classes=6, channels=1).to(device)
     optimizer = Adam(model.parameters(),lr=1e-3)
-    loss_fn = nn.MSELoss()
-    model = train(model,optimizer,loss_fn,max_epochs=30,log_interval=10)
+    loss_fn = nn.SmoothL1Loss()
+    model = train(model,optimizer,loss_fn,max_epochs=20,log_interval=10)
     torch.save(model,'model.pt')
