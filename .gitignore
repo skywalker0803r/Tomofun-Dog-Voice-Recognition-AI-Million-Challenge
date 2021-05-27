@@ -1,0 +1,10 @@
+# python
+*.pyc
+__pycache__
+
+# editor
+.vscode
+
+# dir
+/train
+/public_test
