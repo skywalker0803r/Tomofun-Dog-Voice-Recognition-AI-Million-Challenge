@@ -5,7 +5,8 @@ import os
 from tqdm import tqdm
 import torchaudio
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = 'cpu'
 
 model = torch.load('model.pt').to(device)
 
@@ -16,9 +17,11 @@ X = torch.FloatTensor([])
 for f in tqdm(files[:]):
     # 聲音訊號
     waveform, sample_rate = torchaudio.load(test_data_dir+f)
+    
     # 聲音頻譜圖 梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients, MFCC）
     specgram = torchaudio.transforms.MelSpectrogram()(waveform)
     specgram = torch.unsqueeze(specgram, 0)
+    
     # 加入X
     X = torch.cat([X,specgram],dim=0)
 

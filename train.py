@@ -106,5 +106,5 @@ if __name__ == '__main__':
     model = LeNet().to(device)
     optimizer = Adam(model.parameters(),lr=1e-3)
     loss_fn = nn.SmoothL1Loss()
-    model = train(model,optimizer,loss_fn,max_epochs=100,log_interval=10)
+    model = train(model,optimizer,loss_fn,max_epochs=150,log_interval=10)
     torch.save(model,'model.pt')
