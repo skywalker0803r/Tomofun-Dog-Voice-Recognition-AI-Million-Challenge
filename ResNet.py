@@ -122,8 +122,11 @@ class ResNet(nn.Module):
             
         return nn.Sequential(*layers)
 
-def ResNet18(num_classes, channels=3):
+def ResNet10(num_classes, channels=3):
     return ResNet(Bottleneck, [1,1,1,1], num_classes, channels)
+
+def ResNet18(num_classes, channels=3):
+    return ResNet(Bottleneck, [2,2,2,2], num_classes, channels)
         
 def ResNet50(num_classes, channels=3):
     return ResNet(Bottleneck, [3,4,6,3], num_classes, channels)
