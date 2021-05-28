@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from LeNet import LeNet
 from ResNet import ResNet18
+from ResNet import ResNet50
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -18,6 +19,8 @@ print(device)
 # load data_iter
 train_iter = torch.load('train_iter.pt')
 vaild_iter = torch.load('vaild_iter.pt')
+print(len(train_iter.dataset))
+print(len(vaild_iter.dataset))
 
 
 # train_step

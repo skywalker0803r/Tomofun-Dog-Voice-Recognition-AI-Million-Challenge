@@ -101,7 +101,7 @@ class ResNet(nn.Module):
         x = self.avgpool(x)
         x = x.reshape(x.shape[0], -1)
         x = self.fc(x)
-        
+        x = F.softmax(x)
         return x
         
     def _make_layer(self, ResBlock, blocks, planes, stride=1):
