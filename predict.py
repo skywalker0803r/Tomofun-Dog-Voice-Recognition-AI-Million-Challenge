@@ -5,31 +5,41 @@ import os
 from tqdm import tqdm
 import torchaudio
 import librosa
+import numpy as np
+import gc
 
-#device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device = 'cpu'
+def sample2melspectrogram(samples,sample_rate):
+    melspectrogram = librosa.feature.melspectrogram(samples,sample_rate,center=False)
+    melspectrogram = librosa.power_to_db(melspectrogram, ref=np.max)
+    melspectrogram = (melspectrogram - melspectrogram.min()) / (melspectrogram.max() - melspectrogram.min())
+    melspectrogram = melspectrogram[:80,:]
+    return melspectrogram
 
-model = torch.load('model.pt').to(device)
+# load model
+model = torch.load('model.pt').cuda()
+print('use model is:',model)
 
+# test_data_dir
 test_data_dir = 'public_test/public_test/'
 
+# inference for loop
 files = os.listdir(test_data_dir)
-X = torch.FloatTensor([])
-for f in tqdm(files[:]):
+n = 10000
+sample_submit = pd.read_csv('sample_submission.csv')
+i = 0
+for f in tqdm(files[:n]):
     # load audio
-    audio, sampling_rate = librosa.load(test_data_dir+f)
-     # mel_spectrogram
-    mel_spectrogram = librosa.feature.melspectrogram(y=audio,sr=sampling_rate,n_mels=256,hop_length=128,fmax=8000)
-    # reshape spectrogram shape to [batch_size, time, frequency]
+    samples,sample_rate = librosa.load(test_data_dir+f)
+    mel_spectrogram = sample2melspectrogram(samples,sample_rate)
     shape = mel_spectrogram.shape
     mel_spectrogram = np.reshape(mel_spectrogram, (-1, shape[0], shape[1]))
-    mel_spectrogram = torch.from_numpy(mel_spectrogram)
-    X = torch.cat([X,torch.unsqueeze(mel_spectrogram,0)],dim=0)
+    X = torch.from_numpy(mel_spectrogram)
+    X = torch.unsqueeze(X,0).cuda()
+    y_hat = model(X).detach().cpu().numpy()
+    sample_submit.iloc[[i],1:] = y_hat
+    i += 1
+    gc.collect()
 
-# inference and output submit.csv
-X = torch.FloatTensor(X).to(device)
-y_hat = model(X).detach().cpu().numpy()
-sample_submit = pd.read_csv('sample_submission.csv')
-sample_submit.iloc[:10000,:] = y_hat
+# save
 sample_submit.to_csv('submit.csv',index=False)
 print('done')
