@@ -6,9 +6,7 @@ from tqdm import tqdm
 from copy import deepcopy
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
-from LeNet import LeNet
-from ResNet import ResNet18
-from ResNet import ResNet50
+from ResNet import ResNet10
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -107,9 +105,12 @@ def train(model,optimizer,loss_fn,max_epochs=300,log_interval=10):
 
 
 if __name__ == '__main__':
-    #model = LeNet().to(device)
-    model = ResNet18(6, channels=1).to(device)
+    model = ResNet10(num_classes = 6, channels = 1).to(device)
+    print(model)
+    model = torch.nn.DataParallel(model, device_ids=[0, 1, 2 ,3])
     optimizer = Adam(model.parameters(),lr=1e-3)
     loss_fn = nn.SmoothL1Loss()
-    model = train(model,optimizer,loss_fn,max_epochs=100,log_interval=10)
-    torch.save(model,'model_temp.pt')
+    model = train(model,optimizer,loss_fn,max_epochs=200,log_interval=10)
+    model = model.to('cpu')
+    torch.save(model,'model.pt')
+    print('train done')
